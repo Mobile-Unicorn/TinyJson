@@ -5,7 +5,12 @@
  */
 package com.unicorn.tinyjson.core;
 
+import java.io.StringReader;
+
 import org.json.JSONObject;
+
+import com.unicorn.tinyjson.internal.ModelAdapterFactory;
+import com.unicorn.tinyjson.internal.TypeAdapterFactory;
 
 /**
  * Json门面类
@@ -16,12 +21,13 @@ import org.json.JSONObject;
  *
  */
 public final class JsonFacade {
-
+	private TypeAdapterFactory mFactory;
     /**
      * 
      */
     public JsonFacade() {
-
+    	mFactory = new ModelAdapterFactory();
+    	
     }
 
     /**
@@ -30,8 +36,9 @@ public final class JsonFacade {
      * @param clazz
      * @return
      */
-    public <T> T fromJson(JSONObject json) {
-        T result = null;
+    @SuppressWarnings("unchecked")
+	public <T> T fromJson(String json) {
+        T result = (T)mFactory.create().read(new StringReader(json));
         return result;
     }
     
