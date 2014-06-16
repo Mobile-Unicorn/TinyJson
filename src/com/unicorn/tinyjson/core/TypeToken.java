@@ -5,6 +5,8 @@ package com.unicorn.tinyjson.core;
 
 import java.lang.reflect.Type;
 
+import com.unicorn.tinyjson.utils.TypeUtil;
+
 /**
  * 类型标记类
  * <p>
@@ -27,10 +29,6 @@ public final class TypeToken<T> {
 	
 	@Override
 	public boolean equals(Object o) {
-		if(o instanceof TypeToken<?> ) {
-			
-			return true;
-		}
-		return false;
+		return (o instanceof TypeToken<?>) && TypeUtil.equal(type, ((TypeToken<?>) o).type);
 	}
 }
