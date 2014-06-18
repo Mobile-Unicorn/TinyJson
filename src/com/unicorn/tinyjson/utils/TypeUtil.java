@@ -33,4 +33,20 @@ public final class TypeUtil {
 		return false;
 	}
 	
+	/**
+	 * 将类型进行标准化
+	 * <p>
+	 * 处理一般类型、泛型参数类型、泛型通配符类型、泛型数组类型等
+	 * </p>
+	 * @param type
+	 * @return
+	 */
+	public static Type canonicalize(Type type) {
+	    if (type instanceof Class) {
+	        Class<?> c = (Class<?>) type;
+	        return c.isArray() ? c.getComponentType() : c;
+	    }
+	    return null;
+	}
+	
 }

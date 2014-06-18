@@ -4,11 +4,10 @@
 package com.unicorn.tinyjson.internal;
 
 import java.io.Reader;
-import java.lang.reflect.Array;
-import java.lang.reflect.Type;
-import java.util.Collections;
 
 import android.util.JsonReader;
+
+import com.unicorn.tinyjson.core.TypeToken;
 
 /**
  * @author xu
@@ -17,7 +16,7 @@ import android.util.JsonReader;
 public final class ModelAdapterFactory implements TypeAdapterFactory {
 
 	@Override
-	public <T> TypeAdapter<T> create() {
+	public <T> TypeAdapter<T> create(TypeToken<T> type) {
 		
 		return new ModelAdapter<T>();
 	}

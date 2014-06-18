@@ -6,10 +6,13 @@
 package com.unicorn.tinyjson.core;
 
 import java.io.StringReader;
-
-import org.json.JSONObject;
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.unicorn.tinyjson.internal.ModelAdapterFactory;
+import com.unicorn.tinyjson.internal.TypeAdapter;
 import com.unicorn.tinyjson.internal.TypeAdapterFactory;
 
 /**
@@ -22,12 +25,16 @@ import com.unicorn.tinyjson.internal.TypeAdapterFactory;
  */
 public final class JsonFacade {
 	private TypeAdapterFactory mFactory;
+	
+	//Json数据适配器缓存
+	private final Map<TypeToken<?>, TypeAdapter<?>> mAdapterCache;
+	
     /**
      * 
      */
     public JsonFacade() {
     	mFactory = new ModelAdapterFactory();
-    	
+    	mAdapterCache = Collections.synchronizedMap(new HashMap<TypeToken<?>, TypeAdapter<?>>());
     }
 
     /**
@@ -37,9 +44,21 @@ public final class JsonFacade {
      * @return
      */
     @SuppressWarnings("unchecked")
-	public <T> T fromJson(String json) {
-        T result = (T)mFactory.create().read(new StringReader(json));
+	public <T> T fromJson(String json, Type type) {
+        TypeToken<T> token = (TypeToken<T>)TypeToken.get(type);
+        TypeAdapter<T> adapter = getAdapter(token);
+        T result = adapter.read(new StringReader(json));
         return result;
     }
     
+    private <T> TypeAdapter<T> getAdapter(TypeToken<T> type) {
+        TypeAdapter<?> result = mAdapterCache.get(type);
+        if(result != null) {
+            return (TypeAdapter<T>) result;
+        } else {
+            TypeAdapter<T> adapter = mFactory.create(type);
+            mAdapterCache.put(type, adapter);
+            return adapter;
+        }
+    }
 }

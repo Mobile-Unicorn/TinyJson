@@ -5,6 +5,7 @@ package com.unicorn.tinyjson.core;
 
 import java.lang.reflect.Type;
 
+import com.google.gson.reflect.TypeToken;
 import com.unicorn.tinyjson.utils.TypeUtil;
 
 /**
@@ -22,6 +23,24 @@ public final class TypeToken<T> {
 		type = null;
 	}
 	
+	TypeToken(Type type) {
+	    this.type = TypeUtil.canonicalize(type);
+	}
+	
+    /**
+     * 获得给定Class类型的类型标记实例
+     */
+    public static <T> TypeToken<T> get(Class<T> type) {
+        return new TypeToken<T>(type);
+    }
+	
+    /**
+     * 获得给定{@link Type}类型的类型标记实例
+     */
+    public static TypeToken<?> get(Type type) {
+      return new TypeToken<Object>(type);
+    }
+    
 	@Override
 	public int hashCode() {
 		return type.hashCode();
