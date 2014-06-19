@@ -3,6 +3,10 @@
  */
 package com.unicorn.tinyjson.utils;
 
+import android.util.Log;
+
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
@@ -14,6 +18,9 @@ import java.lang.reflect.Type;
  *
  */
 public final class TypeUtil {
+    
+    private static final String TAG = "TypeUtil";
+    
 	private TypeUtil() {
 		
 	}
@@ -42,10 +49,14 @@ public final class TypeUtil {
 	 * @return
 	 */
 	public static Type canonicalize(Type type) {
-	    if (type instanceof Class) {
+	    if (type instanceof Class) {                       //普通类型
 	        Class<?> c = (Class<?>) type;
 	        return c.isArray() ? c.getComponentType() : c;
-	    }
+	    } else if(type instanceof ParameterizedType) {     //泛型类型
+	        ParameterizedType p = (ParameterizedType) type;
+	        Log.e(TAG, "ownerType is " + p.getOwnerType() + ",RawType is " + p.getRawType()
+	                + ",actualTypeArguments is " + p.getActualTypeArguments()[0]);
+	    } 
 	    return null;
 	}
 	

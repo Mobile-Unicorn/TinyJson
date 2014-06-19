@@ -5,6 +5,8 @@
  */
 package com.unicorn.tinyjson;
 
+import android.view.View;
+
 import com.unicorn.tinyjson.annotation.SerializedName;
 
 import java.util.List;
@@ -22,13 +24,16 @@ public class ThemeModel {
     public String title;
     
     @SerializedName(value = "previews")
-    public List<String> previews;
+    public List<Previews> previews;
     
     /**
      * 
      */
     public ThemeModel() {
-        // TODO Auto-generated constructor stub
+        
     }
 
+    public class Previews extends GenericModel<String>{
+        
+    }
 }

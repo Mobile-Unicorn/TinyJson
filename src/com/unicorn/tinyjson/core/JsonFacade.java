@@ -5,6 +5,8 @@
  */
 package com.unicorn.tinyjson.core;
 
+import android.util.Log;
+
 import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -24,6 +26,9 @@ import com.unicorn.tinyjson.internal.TypeAdapterFactory;
  *
  */
 public final class JsonFacade {
+    
+    private String TAG = "JsonFacade";
+    
 	private TypeAdapterFactory mFactory;
 	
 	//Json数据适配器缓存
@@ -51,11 +56,14 @@ public final class JsonFacade {
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     private <T> TypeAdapter<T> getAdapter(TypeToken<T> type) {
-        TypeAdapter<?> result = mAdapterCache.get(type);
-        if(result != null) {
-            return (TypeAdapter<T>) result;
+        TypeAdapter<?> cache = mAdapterCache.get(type);
+        if(cache != null) {
+            Log.i(TAG, "get adapter from cache");
+            return (TypeAdapter<T>) cache;
         } else {
+            Log.i(TAG, "create a new adapter");
             TypeAdapter<T> adapter = mFactory.create(type);
             mAdapterCache.put(type, adapter);
             return adapter;
