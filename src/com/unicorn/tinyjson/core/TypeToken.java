@@ -5,6 +5,7 @@ package com.unicorn.tinyjson.core;
 
 import android.util.Log;
 
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -93,6 +94,6 @@ public class TypeToken<T> {
 	
 	@Override
 	public boolean equals(Object o) {
-		return (o instanceof TypeToken<?>) && TypeUtil.equal(type, ((TypeToken<?>) o).type);
+		return (o instanceof TypeToken<?>) && TypeUtil.equals(type, ((TypeToken<?>) o).type);
 	}
 }

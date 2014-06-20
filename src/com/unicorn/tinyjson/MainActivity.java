@@ -43,15 +43,15 @@ public final class MainActivity extends Activity {
         mFacade = new JsonFacade();
         
         
-        Type type = StringList2.class.getGenericSuperclass();
+       /* Type type = StringList2.class.getGenericSuperclass();
         System.out.println(type); 
         ParameterizedType pt = (ParameterizedType) type;
         Type ownerType = pt.getOwnerType();
-        Log.e(TAG, "ownerType is " + ownerType);
+        Log.e(TAG, "ownerType is " + ownerType);*/
         
     }
     
-    static class StringList2<T> extends StringListInner<T> {
+    static class StringList2<T> /*extends StringListInner<T>*/ {
         
     }
     
@@ -59,10 +59,14 @@ public final class MainActivity extends Activity {
         Log.e(TAG, "Fetch and parse json data from server");
 //        mFacade.fromJson("a test json string", ThemeModel.class);
 //        mFacade.fromJson("a test json string", new TypeToken<List<ThemeModel>>() {}.getType());
-        mFacade.fromJson("a test json string", new TypeToken<Previews>() {}.getType());
+//        mFacade.fromJson("a test json string", new TypeToken<Previews>() {}.getType());
+        
 //        mFacade.fromJson("a test json string", ThemeModel[].class);
 //        mFacade.fromJson("a test json string", new TypeToken<GenericModel<String>>() {}.getType());
 //        mFacade.fromJson("a test json string", new TypeToken<GenericModel<ThemeModel> []>(){}.getType());
+        
+//        mFacade.fromJson("a test json string", ThemeModel[].class);
+        mFacade.fromJson("a test json string", new TypeToken<StringList<String>.StringListInner<ThemeModel>>(){}.getType());
     }
    
 }

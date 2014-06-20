@@ -7,7 +7,7 @@ public class StringList<T> {
     }
 
     
-    public static class StringListInner<T> {
+    public class StringListInner<T> {
         
     }
     

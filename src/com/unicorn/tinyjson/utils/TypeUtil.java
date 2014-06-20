@@ -5,6 +5,7 @@ package com.unicorn.tinyjson.utils;
 
 import android.util.Log;
 
+import java.io.Serializable;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -31,7 +32,7 @@ public final class TypeUtil {
 	 * @param b
 	 * @return
 	 */
-	public static boolean equal(Type a, Type b) {
+	public static boolean equals(Type a, Type b) {
 		if(a == b) { //包括a = null,b = null的情况
 			return true;
 		} else if(a instanceof Class) {
@@ -51,13 +52,42 @@ public final class TypeUtil {
 	public static Type canonicalize(Type type) {
 	    if (type instanceof Class) {                       //普通类型
 	        Class<?> c = (Class<?>) type;
-	        return c.isArray() ? c.getComponentType() : c;
+	        if(c.isArray()) {
+	        	throw new UnsupportedOperationException("Couldn't handle Array Type");
+	        }
+	        return c;
 	    } else if(type instanceof ParameterizedType) {     //泛型类型
 	        ParameterizedType p = (ParameterizedType) type;
 	        Log.e(TAG, "ownerType is " + p.getOwnerType() + ",RawType is " + p.getRawType()
 	                + ",actualTypeArguments is " + p.getActualTypeArguments()[0]);
-	    } 
-	    return null;
+	        return type;
+	    } else {
+			throw new UnsupportedOperationException("Couldn't handle Type[" + type.getClass().getSimpleName() +"]" );
+		}
 	}
+	
+	private static final class GenericArrayTypeImpl implements GenericArrayType, Serializable {
+	    private final Type componentType;
+
+	    public GenericArrayTypeImpl(Type componentType) {
+	      this.componentType = canonicalize(componentType);
+	      Log.e(TAG, "componentType is " + componentType);
+	    }
+
+	    public Type getGenericComponentType() {
+	      return componentType;
+	    }
+
+	    @Override public boolean equals(Object o) {
+	      return o instanceof GenericArrayType
+	          && TypeUtil.equals(this, (GenericArrayType) o);
+	    }
+
+	    @Override public int hashCode() {
+	      return componentType.hashCode();
+	    }
+
+	    private static final long serialVersionUID = 0;
+	  }
 	
 }
