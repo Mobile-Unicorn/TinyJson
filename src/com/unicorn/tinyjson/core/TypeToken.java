@@ -23,17 +23,23 @@ public class TypeToken<T> {
     
     private static final String TAG = "TypeToken"; 
     
+    /** 声明类型，当T为泛型类型时，表示声明类型，如List<String>,则rawType为List */
+    final Class<? super T> rawType;
+    /** 参数类型 ，当T为泛型类型时，表明参数类型，如List<String>,则type为String*/
 	final Type type;
+	
 	final int hashCode;
 	
 	/**
 	 * 限制通过继承的方式创建新的实例
 	 * <p>
-	 * 使用这种方式可以在运行期获得实例的类型
+	 * 使用这种方式可以在运行期获得实例的类型，一般用于解析泛型类型
 	 * </p>
 	 */
-	protected TypeToken() {
+	@SuppressWarnings("unchecked")
+    protected TypeToken() {
 		type = getSuperclassTypeParameter(getClass());
+		rawType = (Class<? super T>)TypeUtil.getRawType(type);
 		hashCode = type.hashCode();
 	}
 	
@@ -49,28 +55,37 @@ public class TypeToken<T> {
         }
         
         ParameterizedType p = (ParameterizedType) superclass;
-        Log.e(TAG, "ownerType is " + p.getOwnerType());
         return TypeUtil.canonicalize(p.getActualTypeArguments()[0]);
 	}
 	 
 	/**
 	 * 构造方法
 	 * <p>
-	 * 用于
+	 * 用于解析普通类型
 	 * </p>
 	 * @param type
 	 */
-	TypeToken(Type type) {
+	@SuppressWarnings("unchecked")
+    TypeToken(Type type) {
 	    this.type = TypeUtil.canonicalize(type);
+	    this.rawType = (Class<? super T>)TypeUtil.getRawType(this.type);
 	    this.hashCode = this.type.hashCode();
 	}
 	
 	/**
-	 * 获得基本类型实例
+	 * 获得基本类型
 	 * @return
 	 */
 	public Type getType() {
 	    return type;
+	}
+	
+	/**
+	 * 获得声明的类型
+	 * @return
+	 */
+	public Class<? super T> getRawType() {
+	    return rawType;
 	}
 	
     /**
