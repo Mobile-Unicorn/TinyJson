@@ -67,7 +67,7 @@ public final class CollectionTypeAdapterFactory implements TypeAdapterFactory {
 	        in.nextNull();
 	        return null;
 	      }
-
+		
 	      Collection<E> collection = mConstructor.construct();
 	      in.beginArray();
 	      while (in.hasNext()) {

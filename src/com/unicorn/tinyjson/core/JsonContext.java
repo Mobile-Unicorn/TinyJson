@@ -8,8 +8,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.util.Log;
-
 import com.unicorn.tinyjson.internal.TypeAdapter;
 
 /**

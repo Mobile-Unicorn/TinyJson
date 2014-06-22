@@ -10,10 +10,12 @@ import android.util.Log;
 import android.view.View;
 
 import com.google.gson.Gson;
+import com.unicorn.tinyjson.ThemeModel.Preview;
 import com.unicorn.tinyjson.core.JsonFacade;
 import com.unicorn.tinyjson.core.TypeToken;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,10 +48,50 @@ public final class MainActivity extends Activity {
     }
     
     public void onClick(View v) {
-//        mFacade.fromJson("a test json string", new TypeToken<List<List<ThemeModel>>>(){}.getType());
-        try {
-			/*ThemeModel model = mFacade.fromJson(testJson, ThemeModel.class);
-			Log.e(TAG, model.title + ":" + "id=" + model.id + ",previews=" + model.previews.size());*/
+        ThemeModel model1 = new ThemeModel();
+        model1.id = 1;
+        model1.title = "one";
+        model1.previews = new ArrayList<Preview>();
+        model1.previews.add(new Preview("url-1"));
+        model1.previews.add(new Preview("url-2"));
+        model1.previews.add(new Preview("url-3"));
+        
+        ThemeModel model2 = new ThemeModel();
+        model2.id = 2;
+        model2.title = "two";
+        model2.previews = new ArrayList<Preview>();
+        model2.previews.add(new Preview("url-1"));
+        model2.previews.add(new Preview("url-2"));
+        model2.previews.add(new Preview("url-3"));
+        
+        List<ThemeModel> data = new ArrayList<ThemeModel>();
+        data.add(model1);
+        data.add(model2);
+        
+        Gson g = new Gson();
+        String result = g.toJson(data);
+        Log.e(TAG, result);
+        
+       /* List<ThemeModel> restore = g.fromJson(result, new TypeToken<List<ThemeModel>>(){}.getType());
+        for(ThemeModel model : restore) {
+        	Log.e(TAG, "name is " + model.title);
+        }*/
+        
+		try {
+			List<ThemeModel> restore = mFacade.fromJson(testJson, new TypeToken<List<ThemeModel>>(){}.getType());
+			for(ThemeModel model : restore) {
+	        	Log.e(TAG, "name is " + model.title);
+	        }
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    }
+   
+    /* try {
+			ThemeModel model = mFacade.fromJson(testJson, ThemeModel.class);
+			Log.e(TAG, model.title + ":" + "id=" + model.id + ",previews=" + model.previews.size());
         	
         	List<ThemeModel> models = mFacade.fromJson(testJson, new TypeToken<List<ThemeModel>>(){}.getType());
         	Log.e(TAG, "model'size is " + models.size());
@@ -63,13 +105,11 @@ public final class MainActivity extends Activity {
         		Log.e(TAG, model.title + ":has " + model.previews.size() + "previews");
         	}
         	
-        	Log.e(TAG, models.toString());*/
+        	Log.e(TAG, models.toString());
         	
 		} catch (Exception e) {
 			
 			e.printStackTrace();
 		}
-    	
-    }
-   
+    */
 }

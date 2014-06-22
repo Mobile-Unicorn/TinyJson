@@ -4,7 +4,6 @@
 package com.unicorn.tinyjson.internal;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;

@@ -3,14 +3,16 @@
  */
 package com.unicorn.tinyjson.utils;
 
+
 import java.io.Serializable;
+import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.NoSuchElementException;
 
 /**
  * 类型工具类
@@ -23,6 +25,8 @@ import java.util.Collection;
 public final class TypeUtil {
     
     private static final String TAG = "TypeUtil";
+    
+    static final Type[] EMPTY_TYPE_ARRAY = new Type[] {};
     
 	private TypeUtil() {
 		
@@ -50,7 +54,17 @@ public final class TypeUtil {
             return equal(pa.getOwnerType(), pb.getOwnerType())
                     && pa.getRawType().equals(pb.getRawType())
                     && Arrays.equals(pa.getActualTypeArguments(), pb.getActualTypeArguments());
-        }
+		} else if (a instanceof WildcardType) {
+			if (!(b instanceof WildcardType)) {
+				return false;
+			}
+
+			WildcardType wa = (WildcardType) a;
+			WildcardType wb = (WildcardType) b;
+			return Arrays.equals(wa.getUpperBounds(), wb.getUpperBounds())
+					&& Arrays.equals(wa.getLowerBounds(), wb.getLowerBounds());
+
+		}
         return false;
 	}
 	
@@ -132,6 +146,14 @@ public final class TypeUtil {
 
 				return changed ? newParameterizedTypeWithOwner(newOwnerType,
 						original.getRawType(), args) : original;
+
+			} else if (toResolve instanceof TypeVariable) {
+				TypeVariable<?> typeVariable = (TypeVariable<?>) toResolve;
+				toResolve = resolveTypeVariable(context, contextRawType,
+						typeVariable);
+				if (toResolve == typeVariable) {
+					return toResolve;
+				}
 
 			} else {
 				return toResolve;
@@ -289,6 +311,46 @@ public final class TypeUtil {
         private static final long serialVersionUID = 0;
     }
 	
+	static Type resolveTypeVariable(Type context, Class<?> contextRawType,
+			TypeVariable<?> unknown) {
+		Class<?> declaredByRaw = declaringClassOf(unknown);
+
+		// we can't reduce this further
+		if (declaredByRaw == null) {
+			return unknown;
+		}
+
+		Type declaredBy = getGenericSupertype(context, contextRawType,
+				declaredByRaw);
+		if (declaredBy instanceof ParameterizedType) {
+			int index = indexOf(declaredByRaw.getTypeParameters(), unknown);
+			return ((ParameterizedType) declaredBy).getActualTypeArguments()[index];
+		}
+
+		return unknown;
+	}
+	
+	private static int indexOf(Object[] array, Object toFind) {
+	    for (int i = 0; i < array.length; i++) {
+	      if (toFind.equals(array[i])) {
+	        return i;
+	      }
+	    }
+	    throw new NoSuchElementException();
+	  }
+	
+	/**
+	   * Returns the declaring class of {@code typeVariable}, or {@code null} if it was not declared by
+	   * a class.
+	   */
+	  private static Class<?> declaringClassOf(TypeVariable<?> typeVariable) {
+	    GenericDeclaration genericDeclaration = typeVariable.getGenericDeclaration();
+	    return genericDeclaration instanceof Class
+	        ? (Class<?>) genericDeclaration
+	        : null;
+	  }
+	
+    
     /**
      * 类型的字符串信息
      * <p>

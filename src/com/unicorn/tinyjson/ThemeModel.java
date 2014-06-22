@@ -28,7 +28,7 @@ public class ThemeModel {
 
     @Expose(deserialize = true)
     @SerializedName(value = "previews")
-    public List<String> previews;
+    public List<Preview> previews;
     
     public int position;
     
@@ -41,4 +41,17 @@ public class ThemeModel {
         
     }
 
+    public static class Preview {
+    	@Expose(deserialize = true)
+        @SerializedName(value = "url")
+    	String url;
+    	
+    	public Preview(String url) {
+    		this.url = url;
+    	}
+    	
+    	public Preview() {
+    		
+    	}
+    }
 }

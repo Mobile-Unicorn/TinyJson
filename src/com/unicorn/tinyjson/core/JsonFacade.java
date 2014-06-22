@@ -12,12 +12,9 @@ import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.unicorn.tinyjson.internal.CollectionTypeAdapterFactory;
-import com.unicorn.tinyjson.internal.JsonParseException;
 import com.unicorn.tinyjson.internal.ModelAdapterFactory;
 import com.unicorn.tinyjson.internal.TypeAdapter;
 import com.unicorn.tinyjson.internal.TypeAdapterFactory;

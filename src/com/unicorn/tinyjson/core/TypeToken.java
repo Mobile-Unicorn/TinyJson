@@ -3,9 +3,6 @@
  */
 package com.unicorn.tinyjson.core;
 
-import android.util.Log;
-
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -87,13 +84,6 @@ public class TypeToken<T> {
 	public Class<? super T> getRawType() {
 	    return rawType;
 	}
-	
-    /**
-     * 获得给定Class类型的类型标记实例
-     */
-    /*public static <T> TypeToken<T> get(Class<T> type) {
-        return new TypeToken<T>(type);
-    }*/
 	
     /**
      * 获得给定{@link Type}类型的类型标记实例
