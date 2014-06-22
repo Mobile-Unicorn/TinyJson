@@ -3,7 +3,9 @@
  */
 package com.unicorn.tinyjson.internal;
 
-import java.io.Reader;
+import java.io.IOException;
+
+import android.util.JsonReader;
 
 /**
  * 类型适配器
@@ -15,5 +17,5 @@ import java.io.Reader;
  */
 public interface TypeAdapter<T> {
 	
-	T read(Reader reader);
+	T read(JsonReader in) throws IOException;
 }

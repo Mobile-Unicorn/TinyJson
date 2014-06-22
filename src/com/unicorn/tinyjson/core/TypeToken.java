@@ -91,9 +91,9 @@ public class TypeToken<T> {
     /**
      * 获得给定Class类型的类型标记实例
      */
-//    public static <T> TypeToken<T> get(Class<T> type) {
-//        return new TypeToken<T>(type);
-//    }
+    /*public static <T> TypeToken<T> get(Class<T> type) {
+        return new TypeToken<T>(type);
+    }*/
 	
     /**
      * 获得给定{@link Type}类型的类型标记实例

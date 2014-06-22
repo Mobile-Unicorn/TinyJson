@@ -6,7 +6,11 @@ package com.unicorn.tinyjson.utils;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * 类型工具类
@@ -51,9 +55,9 @@ public final class TypeUtil {
 	}
 	
 	/**
-	 * 解析类型，将可支持的类型进行标准化
+	 * 解析类型，将可支持的类型进行规范化
 	 * <p>
-	 * 处理一般类型、泛型参数类型、泛型通配符类型、泛型数组类型等
+	 * 处理一般类型、泛型参数类型
 	 * </p>
 	 * @param type
 	 * @return
@@ -70,7 +74,8 @@ public final class TypeUtil {
 	        return new ParameterizedTypeImpl(p.getOwnerType(),
 	                p.getRawType(), p.getActualTypeArguments());
 	    } else {                                           //不处理其他类型
-			throw new UnsupportedOperationException("Couldn't handle Type[" + type.getClass().getSimpleName() +"]" );
+//			throw new UnsupportedOperationException("Couldn't handle Type[" + type.getClass().getSimpleName() +"]" );
+	    	return type;
 		}
 	}
 	/**
@@ -85,12 +90,137 @@ public final class TypeUtil {
             ParameterizedType parameterizedType = (ParameterizedType) type;
             Type rawType = parameterizedType.getRawType();
             return (Class<?>) rawType;
-        } else { // 不处理其他情况
-            String className = type == null ? "null" : type.getClass().getName();
-            throw new IllegalArgumentException("Expected a Class, ParameterizedType, but <" + type
+        } else if (type instanceof TypeVariable) { 		//类型变量（处理泛型参数类型的情况）
+            return Object.class;
+        } else {										// 不处理其他情况
+        	String className = type == null ? "null" : type.getClass().getName();
+            throw new IllegalArgumentException("Expected a Class, ParameterizedType, TypeVariable, but <" + type
                     + "> is of type " + className);
-        }
+		}
     }
+	/**
+	 * 递归解析可以创建的类型
+	 * <p>
+	 * 可以避免创建一些中间对象
+	 * </p>
+	 * @param context
+	 * @param contextRawType
+	 * @param toResolve
+	 * @return
+	 */
+	public static Type resolve(Type context, Class<?> contextRawType,
+			Type toResolve) {
+		while (true) {
+			if (toResolve instanceof ParameterizedType) {
+				ParameterizedType original = (ParameterizedType) toResolve;
+				Type ownerType = original.getOwnerType();
+				Type newOwnerType = resolve(context, contextRawType, ownerType);
+				boolean changed = newOwnerType != ownerType;
+
+				Type[] args = original.getActualTypeArguments();
+				for (int t = 0, length = args.length; t < length; t++) {
+					Type resolvedTypeArgument = resolve(context,
+							contextRawType, args[t]);
+					if (resolvedTypeArgument != args[t]) {
+						if (!changed) {
+							args = args.clone();
+							changed = true;
+						}
+						args[t] = resolvedTypeArgument;
+					}
+				}
+
+				return changed ? newParameterizedTypeWithOwner(newOwnerType,
+						original.getRawType(), args) : original;
+
+			} else {
+				return toResolve;
+			}
+		}
+	}
+    
+	/**
+	 * 获取集合元素类型
+	 */
+	public static Type getCollectionElementType(Type context,
+			Class<?> contextRawType) {
+		Type collectionType = getSupertype(context, contextRawType,
+				Collection.class);
+
+		if (collectionType instanceof WildcardType) {
+			collectionType = ((WildcardType) collectionType).getUpperBounds()[0];
+		}
+		if (collectionType instanceof ParameterizedType) {
+			return ((ParameterizedType) collectionType)
+					.getActualTypeArguments()[0];
+		}
+		return Object.class;
+	}
+	
+	/**
+	 * 返回 {@code supertype}的泛型格式. 例如{@code ArrayList<String>}将返回 {@code Iterable<String>} 的 {@code Iterable.class}格式.
+	 * 
+	 * @param 父类或接口.
+	 */
+	private static Type getSupertype(Type context, Class<?> contextRawType,
+			Class<?> supertype) {
+
+		if (!supertype.isAssignableFrom(contextRawType)) {
+			throw new IllegalArgumentException();
+		}
+		return resolve(context, contextRawType, getGenericSupertype(context, contextRawType, supertype));
+	}
+
+	/**
+	 * 返回 {@code supertype}的超类类型. 例如类 {@code IntegerSet}，超类为{@code Set.class} 时返回 {@code Set<Integer>}，
+	 * 超类为{@code Collection.class}时返回{@code Collection<Integer>}.
+	 */
+	private static Type getGenericSupertype(Type context, Class<?> rawType,
+			Class<?> toResolve) {
+		if (toResolve == rawType) {
+			return context;
+		}
+
+		// we skip searching through interfaces if unknown is an interface
+		if (toResolve.isInterface()) {
+			Class<?>[] interfaces = rawType.getInterfaces();
+			for (int i = 0, length = interfaces.length; i < length; i++) {
+				if (interfaces[i] == toResolve) {
+					return rawType.getGenericInterfaces()[i];
+				} else if (toResolve.isAssignableFrom(interfaces[i])) {
+					return getGenericSupertype(
+							rawType.getGenericInterfaces()[i], interfaces[i],
+							toResolve);
+				}
+			}
+		}
+
+		// check our supertypes
+		if (!rawType.isInterface()) {
+			while (rawType != Object.class) {
+				Class<?> rawSupertype = rawType.getSuperclass();
+				if (rawSupertype == toResolve) {
+					return rawType.getGenericSuperclass();
+				} else if (toResolve.isAssignableFrom(rawSupertype)) {
+					return getGenericSupertype(rawType.getGenericSuperclass(),
+							rawSupertype, toResolve);
+				}
+				rawType = rawSupertype;
+			}
+		}
+
+		return toResolve;
+	}
+	  
+	/**
+	 * 返回参数化类型.
+	 * 
+	 * @return a {@link java.io.Serializable serializable} parameterized type.
+	 */
+	private static ParameterizedType newParameterizedTypeWithOwner(
+			Type ownerType, Type rawType, Type... typeArguments) {
+		return new ParameterizedTypeImpl(ownerType, rawType, typeArguments);
+	}
 	
 	/**
 	 * 可以在框架中使用的参数类型
@@ -165,7 +295,7 @@ public final class TypeUtil {
      * Type为Class时，toString方法会打印出Class字样，为统一格式，需要加以区分。
      * </p> 
      */
-	public static String typeToString(Type type) {
+	private static String typeToString(Type type) {
 	    return type instanceof Class ? ((Class<?>) type).getName() : type.toString();
 	}
 	/**

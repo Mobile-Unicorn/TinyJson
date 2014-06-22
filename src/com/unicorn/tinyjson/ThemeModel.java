@@ -7,6 +7,7 @@ package com.unicorn.tinyjson;
 
 import android.view.View;
 
+import com.unicorn.tinyjson.annotation.Expose;
 import com.unicorn.tinyjson.annotation.SerializedName;
 
 import java.util.List;
@@ -17,14 +18,21 @@ import java.util.List;
  */
 public class ThemeModel {
     
+	@Expose(deserialize = true)
     @SerializedName(value = "id")
     public int id;
     
+    @Expose(deserialize = true)
     @SerializedName(value = "title")
     public String title;
-    
+
+    @Expose(deserialize = true)
     @SerializedName(value = "previews")
-    public List<Previews> previews;
+    public List<String> previews;
+    
+    public int position;
+    
+    
     
     /**
      * 
@@ -33,7 +41,4 @@ public class ThemeModel {
         
     }
 
-    public class Previews extends GenericModel<String>{
-        
-    }
 }
