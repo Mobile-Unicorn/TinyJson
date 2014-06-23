@@ -36,7 +36,8 @@ public final class MainActivity extends Activity {
     
 //    private String testJson = "{\"id\":169848,\"title\":\"StoneAge\",\"previews\":[{\"url\":\"http://d.c-launcher.com/preview/348/53a0f6d4f48d3d6e2f521eac/desktop_mobile_1403163522660.jpg\"},{\"url\":\"http://d.c-launcher.com/preview/348/53a0f6d4f48d3d6e2f521eac/drawer_mobile_1403163522858.jpg\"},{\"url\":\"http://d.c-launcher.com/preview/348/53a0f6d4f48d3d6e2f521eac/widgets_mobile_1403163523080.jpg\"}]}";
 //    private String testJson = "{\"id\":169848,\"title\":\"StoneAge\"}";
-    private String testJson = "[{\"id\":169848,\"title\":\"StoneAge\",\"previews\":[{\"url\":\"http://d.c-launcher.com/preview/348/53a0f6d4f48d3d6e2f521eac/desktop_mobile_1403163522660.jpg\"},{\"url\":\"http://d.c-launcher.com/preview/348/53a0f6d4f48d3d6e2f521eac/drawer_mobile_1403163522858.jpg\"},{\"url\":\"http://d.c-launcher.com/preview/348/53a0f6d4f48d3d6e2f521eac/widgets_mobile_1403163523080.jpg\"}]},{\"id\":160390,\"title\":\"Rain Drops\",\"previews\":[{\"url\":\"http://d.c-launcher.com/preview/455/539987443c928fe664626d0f/desktop_mobile_1402924666026.jpg\"},{\"url\":\"http://d.c-launcher.com/preview/455/539987443c928fe664626d0f/drawer_mobile_1402924666348.jpg\"},{\"url\":\"http://d.c-launcher.com/preview/455/539987443c928fe664626d0f/widgets_mobile_1402924666659.jpg\"}]}]";
+    private String testListJson = "[{\"id\":169848,\"title\":\"StoneAge\",\"previews\":[{\"url\":\"http://d.c-launcher.com/preview/348/53a0f6d4f48d3d6e2f521eac/desktop_mobile_1403163522660.jpg\"},{\"url\":\"http://d.c-launcher.com/preview/348/53a0f6d4f48d3d6e2f521eac/drawer_mobile_1403163522858.jpg\"},{\"url\":\"http://d.c-launcher.com/preview/348/53a0f6d4f48d3d6e2f521eac/widgets_mobile_1403163523080.jpg\"}]},{\"id\":160390,\"title\":\"Rain Drops\",\"previews\":[{\"url\":\"http://d.c-launcher.com/preview/455/539987443c928fe664626d0f/desktop_mobile_1402924666026.jpg\"},{\"url\":\"http://d.c-launcher.com/preview/455/539987443c928fe664626d0f/drawer_mobile_1402924666348.jpg\"},{\"url\":\"http://d.c-launcher.com/preview/455/539987443c928fe664626d0f/widgets_mobile_1402924666659.jpg\"}]}]";
+    private String testSingleJson = "{\"id\":169848,\"title\":\"StoneAge\"}";
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,10 +79,14 @@ public final class MainActivity extends Activity {
         }*/
         
 		try {
-			List<ThemeModel> restore = mFacade.fromJson(testJson, new TypeToken<List<ThemeModel>>(){}.getType());
+			List<ThemeModel> restore = mFacade.fromJson(testListJson, new TypeToken<List<ThemeModel>>(){}.getType());
 			for(ThemeModel model : restore) {
 	        	Log.e(TAG, "name is " + model.title);
 	        }
+			
+			ThemeModel single = mFacade.fromJson(testSingleJson, ThemeModel.class);
+			Log.e(TAG, "single'name is " + single.title);
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
