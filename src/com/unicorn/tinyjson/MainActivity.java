@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.unicorn.tinyjson.ThemeModel.Preview;
 import com.unicorn.tinyjson.core.JsonFacade;
 import com.unicorn.tinyjson.core.TypeToken;
@@ -88,7 +89,7 @@ public final class MainActivity extends Activity {
 			Log.e(TAG, "single'name is " + single.title);
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
     	

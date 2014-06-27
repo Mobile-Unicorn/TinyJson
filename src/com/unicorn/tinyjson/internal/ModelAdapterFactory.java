@@ -126,8 +126,6 @@ public final class ModelAdapterFactory implements TypeAdapterFactory {
 				@Override
 				void read(JsonReader reader, Object value) throws IOException,
 						IllegalAccessException {
-					Log.e("ModelAdapter", "type:" + fieldType.getType()
-							+ ",rawType:" + fieldType.getRawType());
 					TypeAdapter<?> adapter = context.getAdapter(fieldType);
 					Object fieldValue = adapter.read(reader);
 					if (fieldValue != null) {

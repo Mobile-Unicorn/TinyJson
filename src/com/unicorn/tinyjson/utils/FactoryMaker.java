@@ -90,8 +90,8 @@ public final class FactoryMaker {
 	 * @param typeAdapter
 	 * @return
 	 */
-	public static <TT> TypeAdapterFactory newFactory(
-		      final Class<TT> type, final TypeAdapter<TT> typeAdapter) {
+	public static <F> TypeAdapterFactory newFactory(
+		      final Class<F> type, final TypeAdapter<F> typeAdapter) {
 		    return new TypeAdapterFactory() {
 		      @SuppressWarnings("unchecked") 
 		      public <T> TypeAdapter<T> create(TypeToken<T> typeToken) {
